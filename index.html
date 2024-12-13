@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campo Minado - Dia 24 e Dia 31</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .campo-minado-container {
+            display: grid;
+            grid-template-columns: 40px repeat(10, 60px); /* Primeira coluna para letras */
+            grid-template-rows: 40px repeat(10, 60px); /* Primeira linha para números */
+            grid-gap: 5px;
+        }
+
+        .quadrado {
+            width: 60px;
+            height: 60px;
+            background-color: #ccc;
+            border: 1px solid #888;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .quadrado.ativo {
+            background-color: #fff;
+        }
+
+        .quadrado.tente-novamente {
+            background-color: #f2d7d5;
+        }
+
+        .coluna-letra, .coluna-numero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .coluna-letra {
+            font-size: 20px;
+        }
+
+        .coluna-numero {
+            font-size: 18px;
+        }
+
+        .mensagem {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="campo-minado-container" id="campoMinadoContainer">
+        <!-- Será preenchido pelo script -->
+    </div>
+
+    <script>
+        const folgasDia31 = 13;
+        const folgasDia24 = 13;
+        const totalQuadrados = 100; // 10x10 grid
+        const tamanhoGrid = 10;
+        const container = document.getElementById("campoMinadoContainer");
+        
+        let quadradosDescobertos = 0;
+
+        function inicializarCampo() {
+            container.innerHTML = "";
+
+            // Adicionar números na primeira linha
+            container.appendChild(document.createElement("div"));
+            for (let i = 1; i <= tamanhoGrid; i++) {
+                const numero = document.createElement("div");
+                numero.classList.add("coluna-numero");
+                numero.innerText = i;
+                container.appendChild(numero);
+            }
+
+            // Criar grid com letras e quadrados
+            for (let i = 0; i < tamanhoGrid; i++) {
+                const letra = String.fromCharCode(65 + i); // Letras de A a J
+                const letraDiv = document.createElement("div");
+                letraDiv.classList.add("coluna-letra");
+                letraDiv.innerText = letra;
+                container.appendChild(letraDiv);
+
+                for (let j = 0; j < tamanhoGrid; j++) {
+                    const quadrado = document.createElement("div");
+                    quadrado.classList.add("quadrado");
+                    quadrado.dataset.id = i * tamanhoGrid + j;
+
+                    quadrado.addEventListener("click", () => revelarQuadrado(quadrado));
+
+                    container.appendChild(quadrado);
+                }
+            }
+
+            // Distribuir dias 24 e 31 aleatoriamente
+            let indexFolgas = 0;
+            while (indexFolgas < folgasDia31 + folgasDia24) {
+                let randIndex = Math.floor(Math.random() * totalQuadrados);
+                const quadrado = container.querySelectorAll(".quadrado")[randIndex];
+
+                if (!quadrado.dataset.dia) {
+                    quadrado.dataset.dia = indexFolgas < folgasDia24 ? '24' : '31';
+                    indexFolgas++;
+                }
+            }
+        }
+
+        function revelarQuadrado(quadrado) {
+            if (quadrado.classList.contains("ativo") || quadrado.classList.contains("tente-novamente")) {
+                return;
+            }
+
+            const dia = quadrado.dataset.dia;
+            if (dia === "24" || dia === "31") {
+                quadrado.classList.add("ativo");
+                quadrado.innerText = dia;
+                quadradosDescobertos++;
+            } else {
+                quadrado.classList.add("tente-novamente");
+                quadrado.innerText = "+1 vez";
+            }
+        }
+
+        inicializarCampo();
+    </script>
+</body>
+</html>
